@@ -15,10 +15,11 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps) {
+  const title = `${post.title} | Ignews`
   return (
     <>
       <Head>
-        <title>{post.title} | Ignews</title>
+        <title>{title}</title>
       </Head>
 
       <main className={styles.container}>
@@ -39,6 +40,16 @@ export default function Post({ post }: PostProps) {
 export const getServerSideProps: GetServerSideProps = async ({ req, params }) => {
 
   const session = await getSession({ req })
+
+  if (!session?.activeSubscription) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      }
+    }
+  }
+
   const { slug } = params
 
   const prismic = getPrismicClient(req)
